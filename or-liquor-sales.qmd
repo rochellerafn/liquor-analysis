@@ -1,0 +1,74 @@
+---
+title: "OR-liquor-analysis"
+author: "Rochelle Rafn"
+format: html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+
+```{r}
+or_sales <- read.csv('/Users/rochellerafn/RStudio_Files/liquor-analysis/OR-Liquor-Sales-Store.csv') 
+```
+
+```{r}
+str(or_sales)
+```
+
+```{r}
+or_sales <- or_sales %>%
+  mutate(Month = month.name[Month], Year = as.character(Year))
+
+or_sales$Month = factor(or_sales$Month, levels = month.name)
+
+head(or_sales)
+```
+
+
+```{r}
+unique(or_sales$COUNTY)
+```
+
+```{r}
+unique(or_sales$Year)
+```
+
+```{r}
+or_sales %>%
+ group_by(Store..) %>%
+  summarise()
+```
+
+```{r}
+or_sales_yearly <- or_sales %>%
+  group_by(Year, Month) %>%
+  summarize(sum(Total.Sales))
+
+or_sales_yearly <- or_sales_yearly %>%
+  rename("Total.Sales" = "sum(Total.Sales)")
+
+head(or_sales_yearly)
+```
+
+
+```{r}
+or_sales_yearly %>%
+ggplot(aes(Month, Total.Sales, group = Year, color = Year)) +
+  geom_line()+
+  scale_y_continuous()+
+  theme_minimal()
+```
+
+```{r}
+ggplot(or_sales_yearly, aes(Year, Total.Sales, fill = Year))+
+  geom_col() +
+  theme_minimal()
+```
+
