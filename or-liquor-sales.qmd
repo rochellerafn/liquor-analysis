@@ -15,7 +15,7 @@ library(lubridate)
 
 
 ```{r}
-or_sales <- read.csv('/Users/rochellerafn/RStudio_Files/liquor-analysis/OR-Liquor-Sales-Store.csv') 
+or_sales <- read.csv('/Users/rochellerafn/RStudio_Files/liquor-analysis/OR-Liquor-Sales-Store.csv')
 ```
 
 ```{r}
@@ -57,19 +57,42 @@ or_sales_yearly <- or_sales_yearly %>%
 head(or_sales_yearly)
 ```
 
+```{r}
+# write.csv(or_sales_yearly, '/Users/rochellerafn/RStudio_Files/liquor-analysis/or_sales_yearly.csv')
+```
+
+
 
 ```{r}
+# library(MetBrewer)
+# install.packages("devtools")
+# devtools::install_github("BlakeRMills/MetBrewer")
+
 or_sales_yearly %>%
+  filter(Year < 2023) %>%
 ggplot(aes(Month, Total.Sales, group = Year, color = Year)) +
-  geom_line()+
-  scale_y_continuous()+
-  theme_minimal()
+  geom_line(stat = "identity")+
+  scale_y_continuous(labels = scales::comma)+
+  theme(panel.background = element_blank(),
+        plot.background = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_color_met_d("Klimt")+
+  labs(title = "Seasonality of Oregonian's Liquor Consumption is Consistent",
+       subtitle = "Total Liquor Sales in Oregon",
+       y = "Total Sales (in dollars)")
 ```
 
 ```{r}
-ggplot(or_sales_yearly, aes(Year, Total.Sales, fill = Year))+
-  geom_col() +
-  theme_minimal()
+or_sales_yearly %>%
+  filter(Year < 20213) %>%
+ggplot(aes(Year, Total.Sales, fill = Year, color = Year))+
+  geom_col(stat = "identity")+
+  scale_y_continuous(labels = scales::comma)+
+  theme(panel.background = element_blank(),
+        plot.background = element_blank())+
+  scale_fill_met_d("Klimt")+
+  scale_color_met_d("Klimt")+
+  labs(y = "Total Sales (in dollars)")
 ```
 
 
