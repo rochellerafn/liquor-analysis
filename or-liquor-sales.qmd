@@ -84,7 +84,7 @@ ggplot(aes(Month, Total.Sales, group = Year, color = Year)) +
 
 ```{r}
 or_sales_yearly %>%
-  filter(Year < 20213) %>%
+  filter(Year < 2023) %>%
 ggplot(aes(Year, Total.Sales, fill = Year, color = Year))+
   geom_col(stat = "identity")+
   scale_y_continuous(labels = scales::comma)+
@@ -129,5 +129,85 @@ ggplot(aes(reorder(COUNTY, -Total.Sales), Total.Sales, fill = COUNTY)) +
   scale_y_continuous()+
   theme_void()+
   facet_wrap(~Year)
+```
+
+```{r}
+product_sales_2020 <- readxl::read_xlsx('/Users/rochellerafn/RStudio_Files/liquor-analysis/Product-Sales-Data-CY2020.xlsx', sheet = "750 ml")
+
+str(product_sales_2020)
+```
+
+```{r}
+colnames(product_sales_2020)[4] = "Units_Sold"
+colnames(product_sales_2020)[5] = "Units_Price"
+
+str(product_sales_2020)
+```
+
+
+```{r}
+unique(product_sales_2020$Category)
+```
+
+
+```{r}
+product_sales_2020 <- product_sales_2020 %>%
+  mutate(Total_Sales = Units_Sold * Units_Price)
+
+head(product_sales_2020)
+```
+
+
+```{r}
+product_total_sales_2020 <- product_sales_2020 %>%
+  group_by(Category) %>%
+  summarize(sum(Total_Sales))
+
+product_total_sales_2020 <- product_total_sales_2020 %>%
+  rename("Total_Sales" = "sum(Total_Sales)") %>%
+  arrange(desc(Total_Sales))
+
+product_total_sales_2020
+```
+
+
+```{r}
+ggplot(product_total_sales_2020, aes(reorder(Category, -Total_Sales), Total_Sales, group = Category, fill = Category))+
+  geom_col(stat = "identity")+
+  scale_y_continuous(labels = scales::comma)+
+  theme(panel.background = element_blank(),
+        plot.background = element_blank(),
+        legend.position = "none")+
+  scale_fill_met_d("Signac")+
+  labs(y = "Total Sales (in dollars)",
+       x = "Liquor Type")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+```{r}
+product_total_count_2020 <- product_sales_2020 %>%
+  group_by(Category) %>%
+  summarize(sum(Units_Sold))
+
+product_total_count_2020 <- product_total_count_2020 %>%
+  rename("Total_Units_Sold" = "sum(Units_Sold)") %>%
+  arrange(desc(Total_Units_Sold))
+
+product_total_count_2020
+```
+
+
+```{r}
+ggplot(product_total_count_2020, aes(reorder(Category, -Total_Units_Sold), Total_Units_Sold, group = Category, fill = Category))+
+  geom_col(stat = "identity")+
+  scale_y_continuous(labels = scales::comma)+
+  theme(panel.background = element_blank(),
+        plot.background = element_blank(),
+        legend.position = "none")+
+  scale_fill_met_d("Signac")+
+  labs(y = "Total Units Sold",
+       x = "Liquor Type")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
